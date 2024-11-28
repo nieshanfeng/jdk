@@ -950,9 +950,6 @@ public abstract class Provider extends Properties {
 
             @Override
             public SvcOpResult putService(Service svc) {
-                // At this point, the caller's check for putProviderProperty
-                // permission succeeded, so it is safe to generate keys for the
-                // service that will be on the map.
                 svc.generateServiceKeys();
 
                 // Define a set of algorithm and alias keys that, if already
@@ -2521,9 +2518,7 @@ public abstract class Provider extends Properties {
          * service and alias keys must be generated. Currently used by
          * ServicesMapImpl::putService. Legacy API methods do not need to call:
          * they generated the algorithm key at construction time and alias
-         * keys with Service::addAliasKey. This method assumes that a
-         * putProviderProperty permission was checked before, as unprivileged
-         * callers should not intern Strings.
+         * keys with Service::addAliasKey.
          */
         private void generateServiceKeys() {
             if (algKey == null) {
