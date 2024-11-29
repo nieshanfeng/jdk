@@ -26,6 +26,7 @@
 package sun.security.jgss.wrapper;
 
 import java.io.Serial;
+import java.util.HashMap;
 import java.security.Provider;
 
 import jdk.internal.util.OperatingSystem;
@@ -63,10 +64,10 @@ public final class SunNativeProvider extends Provider {
         System.err.println(NAME + ": " + message);
     }
 
-    private static final Oid[] MECH_OIDS = constructMechMap();
+    private static final HashMap<String, String> MECH_MAP = constructMechMap();
 
     @SuppressWarnings("restricted")
-    private static Oid[] constructMechMap() {
+    private static HashMap<String, String> constructMechMap() {
         try {
             // Ensure the InetAddress class is loaded before
             // loading j2gss. The library will access this class
@@ -111,29 +112,28 @@ public final class SunNativeProvider extends Provider {
                      debug("Loaded GSS library: " + libName);
                  }
                  Oid[] mechs = GSSLibStub.indicateMechs();
-                 if (DEBUG) {
-                     for (Oid mech : mechs) {
-                         debug("Native MF for " + mech);
+                 HashMap<String, String> map = new HashMap<>();
+                 for (int i = 0; i < mechs.length; i++) {
+                     if (DEBUG) {
+                         debug("Native MF for " + mechs[i]);
                      }
+                     map.put("GssApiMechanism." + mechs[i], MF_CLASS);
                  }
-                 return mechs;
+                 return map;
              }
          }
          return null;
      }
 
-    // initialize INSTANCE after MECH_OIDS is constructed
+    // initialize INSTANCE after MECH_MAP is constructed
     static final Provider INSTANCE = new SunNativeProvider();
 
     public SunNativeProvider() {
         /* We are the Sun NativeGSS provider */
         super(NAME, PROVIDER_VER, INFO);
 
-        if (MECH_OIDS != null) {
-            for (Oid mech : MECH_OIDS) {
-                putService(new Service(this, "GssApiMechanism",
-                        mech.toString(), MF_CLASS, null, null));
-            }
+        if (MECH_MAP != null) {
+            putAll(MECH_MAP);
         }
     }
 }
