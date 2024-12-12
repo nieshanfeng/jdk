@@ -379,20 +379,26 @@ public abstract class AbstractQueuedSynchronizer
      */
     static final class Node {
         /** Marker to indicate a node is waiting in shared mode */
+        // 共享模式
         static final Node SHARED = new Node();
         /** Marker to indicate a node is waiting in exclusive mode */
+        // 独占模式
         static final Node EXCLUSIVE = null;
 
         /** waitStatus value to indicate thread has cancelled */
+        // 标识线程已处于结束状态
         static final int CANCELLED =  1;
         /** waitStatus value to indicate successor's thread needs unparking */
+        // 等待被唤醒状态
         static final int SIGNAL    = -1;
         /** waitStatus value to indicate thread is waiting on condition */
+        // 条件状态
         static final int CONDITION = -2;
         /**
          * waitStatus value to indicate the next acquireShared should
          * unconditionally propagate
          */
+        // 在共享模式中使用表示获得的同步状态会被传播
         static final int PROPAGATE = -3;
 
         /**
@@ -429,6 +435,7 @@ public abstract class AbstractQueuedSynchronizer
          * CONDITION for condition nodes.  It is modified using CAS
          * (or when possible, unconditional volatile writes).
          */
+        // 等待状态, 存在CANCELLED、SIGNAL、CONDITION、PROPAGATE 4种
         volatile int waitStatus;
 
         /**
@@ -442,6 +449,7 @@ public abstract class AbstractQueuedSynchronizer
          * cancelled thread never succeeds in acquiring, and a thread only
          * cancels itself, not any other node.
          */
+        // 同步队列中前驱结点
         volatile Node prev;
 
         /**
@@ -457,12 +465,14 @@ public abstract class AbstractQueuedSynchronizer
          * point to the node itself instead of null, to make life
          * easier for isOnSyncQueue.
          */
+        // 同步队列中后继结点
         volatile Node next;
 
         /**
          * The thread that enqueued this node.  Initialized on
          * construction and nulled out after use.
          */
+        // 请求锁的线程
         volatile Thread thread;
 
         /**
@@ -475,11 +485,13 @@ public abstract class AbstractQueuedSynchronizer
          * we save a field by using special value to indicate shared
          * mode.
          */
+        // 等待队列中的后继结点
         Node nextWaiter;
 
         /**
          * Returns true if node is waiting in shared mode.
          */
+        //判断是否为共享模式
         final boolean isShared() {
             return nextWaiter == SHARED;
         }
@@ -491,6 +503,7 @@ public abstract class AbstractQueuedSynchronizer
          *
          * @return the predecessor of this node
          */
+        //获取前驱结点
         final Node predecessor() throws NullPointerException {
             Node p = prev;
             if (p == null)
